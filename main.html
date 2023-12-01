@@ -26,15 +26,15 @@
         document.getElementById(i).value = "";
       }
 
-      updateRemaining{};
+      updateRemaining();
 
       document.getElementById(0).focus();
     }
 
     function updateTable() {
-      ciphertext = document.forms["Generate"]["txt"].value.toUpperCase()
+      ciphertext = document.forms["generate"]["txt"].value.toUpperCase()
 
-      if (ciphertext = "") {
+      if (ciphertext == "") {
         document.getElementByName("cryptogram")[0].innerHTML = "Please enter a cryptogram above.";
         return;
       }
