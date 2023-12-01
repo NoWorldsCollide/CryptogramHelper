@@ -50,7 +50,7 @@
       for (i = 0; i < words.length; i++) {
         html += "<table class=\"cryptogram\">";
         html += "<tr>";
-        for (j = 0; j < words[i].length; j++ {
+        for (j = 0; j < words[i].length; j++) {
           if (lettercheck.test(words[i].charAt(j))) {
             html += "<td class=\"cryptogram\">";
             html += "<input type=text class=\"cryptogram\" id=\"" + count + "\" name=\"" + words[i].charAt(j) + 
@@ -80,146 +80,150 @@
           }
           html += "</td>";
         }
-
-        html += "<br>";
-        html += "<input type=button value=\"Reset\" onclick=\"reset()\">";
-        html += "<input type=button value=\"Get Solution\" onclick=\"writeSolution()\">";
-
-        document.getElementsByName("cryptogram")[0].innerHTML = html;
-
-        html = "<b>Frequency Table (Actual / Expected)</b><br><hr>";
-        for (i = 0; i < 26; i++) {
-          e = Math.round(count * expected[i]);
-          if (isNaN(e) { e = 0; }
-
-          html += String.fromCharCode(offset + i) + " - " + freqtable[i] + " / " + e + "&#160;&#160;&#160;&#160;";
-
-          if ((i + 1) % 4 == 0) {
-            html += "<br>";
-          }
-        }
-
-        document.getElementsByName("freqtable")[0].innerHTML = html;
-
-        updateRemaining();
-
-        document.getElementsByName("tables")[0].style.display = "block";
+        html += "<td class=\"cryptogram\" style=\"border: 0px\">&#160;</td>";
+        html += "</tr>";
+        html += "<tr><td>&#160;</td></tr>";
+        html += "</table>";
       }
 
-      function updateLetter(e) {
-        var keynum;
-        var keychar;
-        var collection;
-        var box;
-        var dir;
-        var i;
+      html += "<br>";
+      html += "<input type=button value=\"Reset\" onclick=\"reset()\">";
+      html += "<input type=button value=\"Get Solution\" onclick=\"writeSolution()\">";
 
-        if (window.event) {
-          keynum = e.keyCode;  // Shouldn't be used anymore, this is old IE style
+      document.getElementsByName("cryptogram")[0].innerHTML = html;
+
+      html = "<b>Frequency Table (Actual / Expected)</b><br><hr>";
+      for (i = 0; i < 26; i++) {
+        e = Math.round(count * expected[i]);
+        if (isNaN(e) { e = 0; }
+
+        html += String.fromCharCode(offset + i) + " - " + freqtable[i] + " / " + e + "&#160;&#160;&#160;&#160;";
+
+        if ((i + 1) % 4 == 0) {
+          html += "<br>";
         }
-        else if (e.which) {
-          keynum = e.which;    // Chromium-based style
+      }
+
+      document.getElementsByName("freqtable")[0].innerHTML = html;
+
+      updateRemaining();
+
+      document.getElementsByName("tables")[0].style.display = "block";
+    }
+
+    function updateLetter(e) {
+      var keynum;
+      var keychar;
+      var collection;
+      var box;
+      var dir;
+      var i;
+
+      if (window.event) {
+        keynum = e.keyCode;  // Shouldn't be used anymore, this is old IE style
+      }
+      else if (e.which) {
+        keynum = e.which;    // Chromium-based style
+      }
+
+      keychar = String.fromCharCode(keynum).toUpperCase();
+      collection = document.getElementsByName("e.target.name")  // Possible compatibility issue!
+      if (lettercheck.test(keychar)) {
+        for (i = 0; i < collection.length; i++) {
+          collection[i].value = keychar;
         }
-
-        keychar = String.fromCharCode(keynum).toUpperCase();
-        collection = document.getElementsByName("e.target.name")  // Possible compatibility issue!
-
-        if (lettercheck.test(keychar)) {
-          for (i = 0; i < collection.length; i++) {
-            collection[i].value = keychar;
+        for (i = parseInt(e.target.id); i < count; i++) {
+          box = document.getElementById(i);
+          if (box.value) == "") {
+            box.focus();
+            box.select();
+            break;
           }
-          for (i = parseInt(e.target.id); i < count; i++) {
-            box = document.getElementById(i);
+        }
+        updateRemaining();
+      }
+      else if (keynum == 8) {  // Backspace
+        for (i = 0; i < collection.length; i++) {
+          collection[i].value = "";
+        }
+        updateRemaining();
+      }
+      else if (keynum == undefined) {  // Assume tab
+        if (e.shiftKey) {
+          dir = -1;
+        }
+        else {
+          dir = 1;
+        }
+        next = document.getElementById((parseInt(e.target.id) + dir) % count);
+        next.focus();
+        next.select();
+      }
+      return false
+    }
+    
+    function updateRemaining() {
+      var box1, box2;
+      var found;
+      var i, j;
 
-            if (box.value) == "") {
-              box.focus();
-              box.select();
-              break;
+      for (i = 0; i < 26; i++) {
+        remaining[i] = String.fromCharCode(offset + i);
+      }
+      for (i = 0; i < count; i++) {
+        document.getElementById(i).style.color = "black";
+      }
+      for (i = 0; i < count; i++) {
+        box1 = document.getElementById(i);
+        found = false;
+        if (remaining.toString().indexOf(box1.value) == -1) {
+          for (j = 0; j < count; j++) {
+            box2 = document.getElementById(j);
+            if (box1.value == box2.value) {
+              if (box1.name != box2.name) {
+                found = true;
+                break;
+              }
             }
           }
-          updateRemaining();
-        }
-        else if (keynum == 8) {  // Backspace
-          for (i = 0; i < collection.length; i++) {
-            collection[i].value = "";
-          }
-          updateRemaining();
-        }
-        else if (keynum == undefined) {  // Assume tab
-          if (e.shiftKey) {
-            dir = -1;
-          }
-          else {
-            dir = 1;
-          }
-          next = document.getElementById((parseInt(e.target.id) + dir) % count);
-          next.focus();
-          next.select();
-        }
-        return false
-      }
-      function updateRemaining() {
-        var box1, box2;
-        var found;
-        var i, j;
-
-        for (i = 0; i < 26; i++) {
-          remaining[i] = String.fromCharCode(offset + i);
-        }
-        for (i = 0; i < count; i++) {
-          document.getElementById(i).style.color = "black";
-        }
-        for (i = 0; i < count; i++) {
-          box1 = document.getElementById(i);
-          found = false;
-          if (remaining.toString().indexOf(box1.value) == -1) {
+          if (found) {
             for (j = 0; j < count; j++) {
               box2 = document.getElementById(j);
               if (box1.value == box2.value) {
-                if (box1.name != box2.name) {
-                  found = true;
-                  break;
-                }
-              }
-            }
-            if (found) {
-              for (j = 0; j < count; j++) {
-                box2 = document.getElementById(j);
-                if (box1.value == box2.value) {
-                  box2.style.color = "red";
-                }
+                box2.style.color = "red";
               }
             }
           }
-          remaining[box1.value.charCodeAt(0) - offset] = "&#160;";
         }
-
-        var html = "<b>Remaining letters</b><br><hr>";
-        for (i = 0; i < 26; i++) {
-          html += remaining[i] + "&#160;&#160;&#160;&#160;";
-          if ((i + 1) % 4 == 0) {
-            html += "<br>";
-          }
-        }
-        document.getElementsByName("remaining")[0].innerHTML = html;
+        remaining[box1.value.charCodeAt(0) - offset] = "&#160;";
       }
-      function writeSolution() {
-        var html = "<b>Solution</b><br><hr>";
-        var i, c;
-
-        for (i = 0, c = 0; i < ciphertext.length; i++) {
-          if (lettercheck.test(ciphertext.charAt(i))) {
-            html += document.getElementById(c).value;
-            c++;
-          }
-          else {
-            html += ciphertext.charAt(i);
-          }
+      
+      var html = "<b>Remaining letters</b><br><hr>";
+      for (i = 0; i < 26; i++) {
+        html += remaining[i] + "&#160;&#160;&#160;&#160;";
+        if ((i + 1) % 4 == 0) {
+          html += "<br>";
         }
-
-        document.getElementsByName("solution")[0].innerHTML = html;
       }
-  </script>
+      document.getElementsByName("remaining")[0].innerHTML = html;
+    }
+    function writeSolution() {
+      var html = "<b>Solution</b><br><hr>";
+      var i, c;
+
+      for (i = 0, c = 0; i < ciphertext.length; i++) {
+        if (lettercheck.test(ciphertext.charAt(i))) {
+          html += document.getElementById(c).value;
+          c++;
+        }
+        else {
+          html += ciphertext.charAt(i);
+        }
+      }
+
+      document.getElementsByName("solution")[0].innerHTML = html;
+    }
+</script>
 </head>
 <body>
 <h1>Cryptogram Helper</h1>
