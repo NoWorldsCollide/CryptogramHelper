@@ -1,0 +1,242 @@
+<head>
+  <title>Cryptogram Helper</title>
+  <style>
+    TABLE.cryptogram { border-spacing: 1px; display: inline; }
+    TD.cryptogram { border: 1px dashed black; padding: 5px; font-size: 16pt; font-weight: bold; }
+    TD.table { border: 1px dashed black; font-family: monospace; font-0size: 8pt; padding: 10px; vertical-align: top; white-space: nowwrap; }
+    INPUT.cryptogram { border: 0px; font-size: 16pt; width: 1em; }
+  </style>
+  <script>
+    ciphertext = "";
+    count = 0;
+    lettercheck = /[A-Z]/;
+    offset = "A".charCodeAt(0);
+
+    freqtable = new Array();
+    remaining = new Array();
+
+    expected = [ 0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015, 0.06094, 0.06966, 
+                 0.00153, 0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 
+                 0.06327, 0.09056, 0.02758, 0.00978, 0.02360, 0.01974, 0.00074 ];
+
+    function reset() {
+      var i;
+
+      for (i = 0; i < count; i++) {
+        document.getElementById(i).value = "";
+      }
+
+      updateRemaining{};
+
+      document.getElementById(0).focus();
+    }
+
+    function updateTable() {
+      ciphertext = document.forms["generate"]["txt"].value.toUpperCase()
+
+      if (ciphertext = "") {
+        document.getElementByName("cryptogram")[0].innerHTML = "Please enter a cryptogram above.";
+        return;
+      }
+
+      var words = ciphertext.split(" ");
+      var html = "";
+      var i, j, e;
+
+      for (i = 0; i < 26; i++) {
+        freqtable[i] = 0;
+      }
+
+      count = 0;
+      for (i = 0; i < words.length; i++) {
+        html += "table class=\"cryptogram\">";
+        html += "<tr>";
+        for (j = 0; j < words[i].length; j++ {
+          if (lettercheck.test(words[i].charAt(j))) {
+            html += "<td class=\"cryptogram\">";
+            html += "<input type=text class=\"cryptogram\" id=\"" + count + "\" name=\"" + words[i].charAt(j) + 
+                    "\" onkeypress=\"return updateLetter(event)\">";
+
+            // Setup of frequency table
+            freqtable[words[i].charCodeAt(j) - offset]++;
+
+            count++;
+          }
+          else {
+            html += "<td class=\"cryptogram\" style=\"border: 0px\">";
+            html += words[i].charAt(j);
+          }
+          html += "</td>";
+        }
+        html += "<td class=\"cryptogram\" style=\"border: 0px\">&#160;</td>";
+        html += "</tr>";
+        html += "<tr>";
+        for (j = 0; j < words[i].length; j++) {
+          if (lettercheck.test(words[i].charAt(j))) {
+            html += "<td class=\"cryptogram\" style=\"border: 0px;\">";
+            html += words[i].charAt(j);
+          }
+          else {
+            html += "<td class=\"cryptogram\" style=\"border: 0px\">&#160;</td>";
+          }
+          html += "</td>";
+        }
+
+        html += "<br>";
+        html += "<input type=button value=\"Reset\" onclick=\"reset()\">";
+        html += "<input type=button value=\"Get Solution\" onclick=\"writeSolution()\">";
+
+        document.getElementsByName("cryptogram")[0].innerHTML = html;
+
+        html = "<b>Frequency Table (Actual / Expected)</b><br><hr>";
+        for (i = 0; i < 26; i++) {
+          e = Math.round(count * expected[i]);
+          if (isNaN(e) { e = 0; }
+
+          html += String.fromCharCode(offset + i) + " - " + freqtable[i] + " / " + e + "&#160;&#160;&#160;&#160;";
+
+          if ((i + 1) % 4 == 0) {
+            html += "<br>";
+          }
+        }
+
+        document.getElementsByName("freqtable")[0].innerHTML = html;
+
+        updateRemaining();
+
+        document.getElementsByName("tables")[0].style.display = "block";
+      }
+
+      function updateLetter(e) {
+        var keynum;
+        var keychar;
+        var collection;
+        var box;
+        var dir;
+        var i;
+
+        if (window.event) {
+          keynum = e.keyCode;  // Shouldn't be used anymore, this is old IE style
+        }
+        else if (e.which) {
+          keynum = e.which;    // Chromium-based style
+        }
+
+        keychar = String.fromCharCode(keynum).toUpperCase();
+        collection = document.getElementsByName("e.target.name")  // Possible compatibility issue!
+
+        if (lettercheck.test(keychar)) {
+          for (i = 0; i < collection.length; i++) {
+            collection[i].value = keychar;
+          }
+          for (i = parseInt(e.target.id); i < count; i++) {
+            box = document.getElementById(i);
+
+            if (box.value) == "") {
+              box.focus();
+              box.select();
+              break;
+            }
+          }
+          updateRemaining();
+        }
+        else if (keynum == 8) {  // Backspace
+          for (i = 0; i < collection.length; i++) {
+            collection[i].value = "";
+          }
+          updateRemaining();
+        }
+        else if (keynum == undefined) {  // Assume tab
+          if (e.shiftKey) {
+            dir = -1;
+          }
+          else {
+            dir = 1;
+          }
+          next = document.getElementById((parseInt(e.target.id) + dir) % count);
+          next.focus();
+          next.select();
+        }
+        return false
+      }
+      function updateRemaining() {
+        var box1, box2;
+        var found;
+        var i, j;
+
+        for (i = 0; i < 26; i++) {
+          remaining[i] = String.fromCharCode(offset + i);
+        }
+        for (i = 0; i < count; i++) {
+          document.getElementById(i).style.color = "black";
+        }
+        for (i = 0; i < count; i++) {
+          box1 = document.getElementById(i);
+          found = false;
+          if (remaining.toString().indexOf(box1.value) == -1) {
+            for (j = 0; j < count; j++) {
+              box2 = document.getElementById(j);
+              if (box1.value == box2.value) {
+                if (box1.name != box2.name) {
+                  found = true;
+                  break;
+                }
+              }
+            }
+            if (found) {
+              for (j = 0; j < count; j++) {
+                box2 = document.getElementById(j);
+                if (box1.value == box2.value) {
+                  box2.style.color = "red";
+                }
+              }
+            }
+          }
+          remaining[box1.value.charCodeAt(0) - offset] = "&#160;";
+        }
+
+        var html = "<b>Remaining letters</b><br><hr>";
+        for (i = 0; i < 26; i++) {
+          html += remaining[i] + "&#160;&#160;&#160;&#160;";
+          if ((i + 1) % 4 == 0) {
+            html += "<br>";
+          }
+        }
+        document.getElementsByName("remaining")[0].innerHTML = html;
+      }
+      function writeSolution() {
+        var html = "<b>Solution</b><br><hr>";
+        var i, c;
+
+        for (i = 0, c = 0; i < ciphertext.length; i++) {
+          if (lettercheck.test(ciphertext.charAt(i))) {
+            html += document.getElementById(c).value;
+            c++;
+          }
+          else {
+            html += ciphertext.charAt(i);
+          }
+        }
+
+        document.getElementsByName("solution")[0].innerHTML = html;
+      }
+  </script>
+</head>
+<body>
+<h1>Cryptogram Helper</h1>
+<p>This tool is meant to assist with solving cryptograms by automatically filling in letters and displaying a frequency table.</p>
+<p>Enter ciphertext here, then click "Generate":</p>
+<form name="generate"><input name="txt" type=text style="width:600px">&#160;<input type=button value="Generate" onclick="updateTable()"></form>
+<br>
+<div name="cryptogram"></div><br>
+<div name="tables" style="display:none"><table cellspacing="10">
+<tr><td class="table">
+<div name="freqtable"></div></td>
+<td class="table">
+<div name="remaining"></div></td>
+<td class="table" style="white-space:normal; width: 100%">
+<div name="solution"><b>Solution</b><br><hr></div></td>
+</tr>
+</table>
+</div>
+</body>
