@@ -24,6 +24,21 @@
             min-width: 300px;
             white-space: pre-wrap;
         }
+        .aligned-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        .ciphertext-row, .plaintext-row {
+            display: flex;
+        }
+        .ciphertext-char, .plaintext-char {
+            width: 20px;
+            text-align: center;
+            margin: 1px;
+        }
     </style>
 </head>
 <body>
@@ -31,7 +46,10 @@
     <label for="ciphertext">Enter Ciphertext:</label>
     <input type="text" id="ciphertext" oninput="createInputs()">
     <div id="input-area"></div>
-    <div class="output" id="output-text"></div>
+    <div class="aligned-box">
+        <div id="plaintext-row" class="plaintext-row"></div>
+        <div id="ciphertext-row" class="ciphertext-row"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
