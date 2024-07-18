@@ -34,7 +34,7 @@
       ciphertext = document.forms["generate"]["txt"].value.toUpperCase()
 
       if (ciphertext == "") {
-        document.getElementByName("cryptogram")[0].innerHTML = "Please enter a cryptogram above.";
+        document.getElementsByName("cryptogram")[0].innerHTML = "Please enter a cryptogram above.";
         return;
       }
 
@@ -67,7 +67,7 @@
           }
           html += "</td>";
         }
-        html += "<td class=\"cryptogram\" style=\"border: 0px;\">&#160;</td>";
+        html += "<td class=\"cryptogram\" style=\"border: 0px\">&#160;</td>";
         html += "</tr>";
         html += "<tr>";
         for (j = 0; j < words[i].length; j++) {
@@ -225,20 +225,25 @@
   </script>
 </head>
 <body>
-<h1>Cryptogram Helper</h1>
-<p>This tool is meant to assist with solving cryptograms by automatically filling in letters and displaying a frequency table.</p>
-<p>Enter ciphertext here, then click "Generate":</p>
-<form name="generate"><input name="txt" type=text style="width:600px">&#160;<input type=button value="Generate" onclick="updateTable()"></form>
-<br>
-<div name="cryptogram"></div><br>
-<div name="tables" style="display: none"><table cellspacing="10">
-<tr><td class="table">
-<div name="freqtable"></div></td>
-<td class="table">
-<div name="remaining"></div></td>
-<td class="table" style="white-space: normal; width: 100%;">
-<div name="solution"><b>Solution</b><br><hr></div></td>
-</tr>
-</table>
-</div>
+  <h1>Cryptogram Helper</h1>
+  <p>This tool is meant to assist with solving cryptograms by automatically filling in letters and displaying a frequency table.</p>
+  <p>Enter ciphertext here, then click "Generate":</p>
+  <form name="generate"><input name="txt" type=text style="width:600px">&#160;<input type=button value="Generate" onclick="updateTable()"></form>
+  <br>
+  <div name="cryptogram"></div><br>
+  <div name="tables" style="display: none">
+    <table cellspacing="10">
+      <tr>
+        <td class="table">
+          <div name="freqtable"></div>
+        </td>
+        <td class="table">
+          <div name="remaining"></div>
+        </td>
+        <td class="table" style="white-space: normal; width: 100%;">
+          <div name="solution"><b>Solution</b><br><hr></div>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
