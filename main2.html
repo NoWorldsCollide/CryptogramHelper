@@ -16,6 +16,14 @@
         .duplicate {
             background-color: red;
         }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            min-width: 300px;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -23,6 +31,7 @@
     <label for="ciphertext">Enter Ciphertext:</label>
     <input type="text" id="ciphertext" oninput="createInputs()">
     <div id="input-area"></div>
+    <div class="output" id="output-text"></div>
     <script src="script.js"></script>
 </body>
 </html>
