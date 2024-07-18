@@ -5,12 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
     window.createInputs = () => {
         const ciphertext = document.getElementById('ciphertext').value.toUpperCase();
         const inputArea = document.getElementById('input-area');
+        const plaintextRow = document.getElementById('plaintext-row');
+        const ciphertextRow = document.getElementById('ciphertext-row');
         inputArea.innerHTML = ''; // Clear previous inputs
-        document.getElementById('output-text').innerHTML = ''; // Clear output text
+        plaintextRow.innerHTML = ''; // Clear plaintext row
+        ciphertextRow.innerHTML = ''; // Clear ciphertext row
 
         const inputs = {};
         for (let i = 0; i < ciphertext.length; i++) {
             const char = ciphertext[i];
+            const ctCharElement = document.createElement('div');
+            ctCharElement.classList.add('ciphertext-char');
+            ctCharElement.textContent = char;
+            ciphertextRow.appendChild(ctCharElement);
+
+            const ptCharElement = document.createElement('div');
+            ptCharElement.classList.add('plaintext-char');
+            ptCharElement.textContent = '_';
+            ptCharElement.dataset.index = i;
+            plaintextRow.appendChild(ptCharElement);
+
             if (char.match(/[A-Z]/)) {
                 if (!inputs[char]) {
                     inputs[char] = [];
@@ -91,17 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateOutput() {
         const ciphertext = document.getElementById('ciphertext').value.toUpperCase();
-        let outputText = '';
+        const plaintextRow = document.getElementById('plaintext-row').children;
 
         for (let i = 0; i < ciphertext.length; i++) {
             const char = ciphertext[i];
             if (char.match(/[A-Z]/)) {
-                outputText += ctToPtMap[char] || '_';
-            } else {
-                outputText += char;
+                plaintextRow[i].textContent = ctToPtMap[char] || '_';
             }
         }
-
-        document.getElementById('output-text').textContent = outputText;
     }
 });
