@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const ctToPtMap = {};
+    const ptToCtMap = {};
+
     window.createInputs = () => {
         const ciphertext = document.getElementById('ciphertext').value.toUpperCase();
         const inputArea = document.getElementById('input-area');
@@ -14,8 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const inputBox = document.createElement('input');
                 inputBox.setAttribute('maxlength', '1');
                 inputBox.classList.add('input-box');
+                inputBox.dataset.index = i;
                 inputBox.dataset.char = char;
-                inputBox.addEventListener('input', () => updateInputs(char, inputBox.value.toUpperCase()));
+                inputBox.addEventListener('input', (event) => updateInputs(char, event.target.value.toUpperCase(), event.target));
                 inputs[char].push(inputBox);
             }
         }
@@ -29,25 +33,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    function updateInputs(char, value) {
+    function updateInputs(char, value, target) {
         const allInputs = document.querySelectorAll(`[data-char="${char}"]`);
         allInputs.forEach(input => input.value = value);
+
+        // Update ctToPtMap and ptToCtMap
+        if (value) {
+            ctToPtMap[char] = value;
+            ptToCtMap[value] = ptToCtMap[value] || new Set();
+            ptToCtMap[value].add(char);
+        } else {
+            delete ctToPtMap[char];
+            for (const key in ptToCtMap) {
+                ptToCtMap[key].delete(char);
+                if (ptToCtMap[key].size === 0) {
+                    delete ptToCtMap[key];
+                }
+            }
+        }
 
         // Highlight duplicates
         const usedValues = {};
         document.querySelectorAll('.input-box').forEach(input => {
             const inputValue = input.value;
+            const inputChar = input.dataset.char;
             if (inputValue) {
-                if (usedValues[inputValue]) {
-                    usedValues[inputValue].forEach(dupInput => dupInput.classList.add('duplicate'));
-                    input.classList.add('duplicate');
-                } else {
-                    usedValues[inputValue] = [input];
-                    input.classList.remove('duplicate');
+                if (!usedValues[inputValue]) {
+                    usedValues[inputValue] = [];
                 }
-            } else {
-                input.classList.remove('duplicate');
+                usedValues[inputValue].push(input);
             }
         });
+
+        for (const value in usedValues) {
+            if (usedValues[value].length > 1) {
+                usedValues[value].forEach(input => {
+                    if (ptToCtMap[value] && ptToCtMap[value].size > 1) {
+                        input.classList.add('duplicate');
+                    } else {
+                        input.classList.remove('duplicate');
+                    }
+                });
+            } else {
+                usedValues[value][0].classList.remove('duplicate');
+            }
+        }
     }
 });
