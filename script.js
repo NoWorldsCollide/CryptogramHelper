@@ -19,8 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 inputBox.classList.add('input-box');
                 inputBox.dataset.index = i;
                 inputBox.dataset.char = char;
-                inputBox.addEventListener('input', (event) => updateInputs(char, event.target.value.toUpperCase(), event.target));
+                inputBox.addEventListener('input', (event) => updateInputs(char, event.target.value.toUpperCase()));
                 inputs[char].push(inputBox);
+            } else {
+                const span = document.createElement('span');
+                span.textContent = char;
+                inputArea.appendChild(span);
             }
         }
 
@@ -31,9 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
             inputs[char].forEach(input => charBox.appendChild(input));
             inputArea.appendChild(charBox);
         }
+
+        updateOutput();
     };
 
-    function updateInputs(char, value, target) {
+    function updateInputs(char, value) {
         const allInputs = document.querySelectorAll(`[data-char="${char}"]`);
         allInputs.forEach(input => input.value = value);
 
@@ -78,5 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 usedValues[value][0].classList.remove('duplicate');
             }
         }
+
+        updateOutput();
+    }
+
+    function updateOutput() {
+        const ciphertext = document.getElementById('ciphertext').value.toUpperCase();
+        let outputText = '';
+
+        for (let i = 0; i < ciphertext.length; i++) {
+            const char = ciphertext[i];
+            if (char.match(/[A-Z]/)) {
+                outputText += ctToPtMap[char] || '_';
+            } else {
+                outputText += char;
+            }
+        }
+
+        document.getElementById('output-text').textContent = outputText;
     }
 });
