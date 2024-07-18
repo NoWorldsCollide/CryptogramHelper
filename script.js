@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ciphertext = document.getElementById('ciphertext').value.toUpperCase();
         const inputArea = document.getElementById('input-area');
         inputArea.innerHTML = ''; // Clear previous inputs
+        document.getElementById('output-text').innerHTML = ''; // Clear output text
 
         const inputs = {};
         for (let i = 0; i < ciphertext.length; i++) {
